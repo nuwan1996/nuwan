@@ -8,28 +8,18 @@ if (isset($_POST['submit'])) {
     $name = $_POST['name'];
     $add = $_POST['add'];
     $contact = $_POST['contact'];
-    // try {
-    $sql = "SELECT * FROM customer WHERE name='$name'";
+    // $sql = "SELECT * FROM customer WHERE name='$name'";
+    // $result = mysqli_query($conn, $sql);
+    $sql = "INSERT INTO customer (name, code, add, contact) VALUES ('$name', '$code', '$add', '$contact')";
     $result = mysqli_query($conn, $sql);
-    // if (!$result->num_rows > 0) {
-        $sql = "INSERT INTO customer (name, code, add, contact) VALUES ('$name', '$code', '$add', '$contact')";
-        $result = mysqli_query($conn, $sql);
-        if ($result) {
-            echo "<script>alert('Wow! Customer Registration Completed.')</script>";
-        } else {
-            echo "<script>alert('Woops! Something Wrong Went.')</script>";
-        }
-    // } else {
-    //     echo "<script>alert('Woops! Customer Already Exists.')</script>";
-    // }
-// } catch (mysqli_sql_exception $e) { 
-//     var_dump($e);
-//     exit; 
-//  } 
+    if ($result) {
+        echo "<script>alert('Wow! Customer Registration Completed.')</script>";
+    } else {
+        echo "<script>alert('Woops! Something Wrong Went.')</script>";
+    }
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

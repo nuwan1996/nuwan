@@ -13,8 +13,7 @@ if (isset($_POST['submit'])) {
   $sql = "SELECT * FROM freeissue WHERE id=0";
   $result = mysqli_query($conn, $sql);
   if (!$result->num_rows > 0) {
-      $sql = "INSERT INTO freeissue (label, type, product, qty, freeqty, lower, upper)
-              VALUES ('$label', '$type', '$purchase', '$purchase_qty', '$free_qty', '$lower', '$upper')";
+      $sql = "INSERT INTO freeissue (label, type, product, qty, freeqty, lower, upper) VALUES ('$label', '$type', '$purchase', '$purchase_qty', '$free_qty', '$lower', '$upper')";
       $result = mysqli_query($conn, $sql);
       if ($result) {
           echo "<script>alert('Wow! Product Added.')</script>";

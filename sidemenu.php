@@ -23,7 +23,7 @@
 
 
         <li class="nav-item">
-            <a class="nav-link text-white " href="add_customer.php">
+            <a class="nav-link text-white " href="customer.php">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                 <i class="fa fa-user-plus" aria-hidden="true"></i>
             </div>
