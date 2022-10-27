@@ -7,10 +7,6 @@ if (isset($_POST['submit'])) {
   $code = $r->num_rows+1;
   $customer_name = $_POST['cutomer'];
   $status = 1;
-  
-  // $sql = "SELECT * FROM orders WHERE name='$product_name'";
-  // $result = mysqli_query($conn, $sql);
-  // if (!$result->num_rows > 0) {
       $sql = "INSERT INTO orders (ordercode, customer, status)
               VALUES ('$code', '$product_name', '$status')";
       $result = mysqli_query($conn, $sql);
@@ -20,14 +16,9 @@ if (isset($_POST['submit'])) {
       } else {
           echo "<script>alert('Woops! Something Wrong Went.')</script>";
       }
-  // } else {
-  //     echo "<script>alert('Woops! Product Already Exists.')</script>";
-  // }
 }
-
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,17 +39,16 @@ if ($r->num_rows > 0){
   $code = $rem_order[0];
   header('location: order.php');
 }else{
-  $code = $r->num_rows+1;
+  $countt = "SELECT * FROM orders";
+  $res = mysqli_query($conn, $countt);
+  $code = $res->num_rows+1;
 }
-
-
 
 $data2 = mysqli_query($conn, "SELECT * FROM customer");
 $customer = array();
 while ($row = mysqli_fetch_array($data2)) {
     array_push($customer, $row["name"]);
 }
-$price = 50;
 ?>
 
 <div class="row">
@@ -81,8 +71,6 @@ $price = 50;
           <div class="input-group input-group-outline mb-3">
             <input type="text" class="form-control" disabled value="<?php echo $code; ?>">
           </div>
-          
-
                 <div class="text-center">
                   <button name="submit" value="submit" type="submit" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Create Order</button>
                 </div>
