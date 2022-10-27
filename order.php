@@ -1,28 +1,20 @@
 <?php 
 include 'conn.php'; 
 
-if (isset($_POST['products'])) {
-  
-  $product_name = $_POST['products'];
-  $price = $_POST['prices'];
-  $amounts = $_POST['amounts'];
-  $qts = $_POST['qty']
-  $sql = "SELECT * FROM product WHERE name='$product_name'";
-  $result = mysqli_query($conn, $sql);
-  if (!$result->num_rows > 0) {
-      $sql = "INSERT INTO product (code, name, price, expire)
-              VALUES ('$code', '$product_name', '$price', '$date')";
-      $result = mysqli_query($conn, $sql);
-      if ($result) {
-          echo "<script>alert('Wow! Product Registration Completed.')</script>";
-      } else {
-          echo "<script>alert('Woops! Something Wrong Went.')</script>";
-      }
-  } else {
-      echo "<script>alert('Woops! Product Already Exists.')</script>";
+function getPrice($pro, $conn){
+  $data = mysqli_query($conn, "SELECT * FROM product");
+  $product = array();
+  $prod_price = array();
+  while ($row = mysqli_fetch_array($data)) {
+      array_push($product, $row["name"]);
+      array_push($prod_price, $row["price"]);
+  }
+  for($i=0; $i < count($product); $i++){
+    if ($product[$i] == $pro){
+      return ($prod_price[$i]);
+    }
   }
 }
-
 
 $s = "SELECT * FROM orders WHERE status=1";
 $r = mysqli_query($conn, $s);
@@ -37,7 +29,41 @@ if ($r->num_rows > 0){
   $customer1 = $cus[0];
 }
 
-//Warning: Undefined array key "code" in C:\xampp\htdocs\nuwan\order.php on line 9
+if (isset($_POST['products'])) {
+  $product_name = $_POST['products'];
+  $price = getPrice($_POST['products'], $conn);
+  $qts = $_POST['qty'];
+  $amounts = $price * $qts;
+  // if (!$result->num_rows > 0) {
+      $sql = "INSERT INTO orderitems (ordercode, product, price, qty, amount)
+              VALUES ('$code', '$product_name', '$price', '$qts', $amounts)";
+      $result = mysqli_query($conn, $sql);
+      if ($result) {
+          // echo "<script>alert('Wow! Product Registration Completed.')</script>";
+          $_POST = array();
+      } else {
+          echo "<script>alert('Woops! Something Wrong Went.')</script>";
+      }
+  // } else {
+  //     echo "<script>alert('Woops! Product Already Exists.')</script>";
+  // }
+}
+
+if (isset($_GET['get_submit'])) {
+  $sql = "UPDATE orders SET status=2 WHERE ordercode='$code'";
+  $result = mysqli_query($conn, $sql);
+  if ($result){
+    $_GET = array();
+    header('location: createorder.php');
+  }else {
+    echo "<script>alert('Woops! Something Wrong Went.')</script>";
+  }
+}
+
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +84,7 @@ $price = array();
 $amount = array();
 while ($row = mysqli_fetch_array($data)) {
     array_push($item, $row["product"]);
-    array_push($quantity, $row["qty"]);
+    array_push($quatity, $row["qty"]);
     array_push($amount, $row["amount"]);
     array_push($price, $row["price"]);
 }
@@ -68,7 +94,7 @@ $product = array();
 $prod_price = array();
 while ($row = mysqli_fetch_array($data)) {
     array_push($product, $row["name"]);
-    array_push($prod_price, $row["name"]);
+    array_push($prod_price, $row["price"]);
 }
 
 ?>
@@ -81,50 +107,7 @@ while ($row = mysqli_fetch_array($data)) {
         <h4 class="font-weight-bolder">Place Order</h4>
       </div>
       <div class="card-body">
-        <form role="form">
-          <label class="form-label">Customer Name</label>
-          <div class="input-group input-group-outline mb-3">
-          <input type="text" class="form-control" disabled value="<?php echo $customer1; ?>">
-            
-          </div>
-          <label class="form-label">Order Number</label>
-          <div class="input-group input-group-outline mb-3">
-            <input type="text" class="form-control" disabled value="<?php echo $code; ?>">
-          </div>
-          
-          <div class="container-fluid py-4">
-            <div class="row">
-              <div class="col-12">
-                <div class="card my-4">
-                  <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                      <h6 class="text-white text-capitalize ps-3">Products</h6>
-                    </div>
-                  </div>
-                  <div class="card-body px-0 pb-2">
-                    <div class="table-responsive p-0">
-                      <table class="table align-items-center mb-0" id="ordertable">
-                        <thead>
-                          <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Price</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Quantity</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
-                            
-                          </tr>
-                        
-                        <tbody>
-                        <?php for ($i = 0; $i < count($item); $i++) {?>
-                          <tr>
-                            <th><?php echo $item[$i]; ?></th>
-                            <th><?php echo $price[$i]; ?></th>
-                            <th><?php echo $quantity[$i]; ?></th>
-                            <th><?php echo $amount[$i]; ?></th>
-                          </tr>
-                          <?php } ?>
-                        </tbody></thead>
-                        </table></div></div></div></div></div></div>
-
+        
                           <div class="row">
                             <div class="col-md-6">
                               <div class="input-group input-group-outline mb-3">
@@ -152,17 +135,53 @@ while ($row = mysqli_fetch_array($data)) {
                             </div>
                             <div class="col-md-6">
                               <div class="input-group input-group-outline mb-3">
-                                <input type="number" class="form-control" id="qty" name='qty'>
+                                <input type="number" class="form-control" id="qty" name='qty' require>
                               </div>
                             </div>
+                            <div class="row">
                             <div class="col-md-6">
                             <button class="btn bg-gradient-info w-100 mb-0 toast-btn" type="submit" data-target="infoToast" name="submit">Add</button>
-                          </form>
+                            </div>
+                          </div></form>
                           </div>
-                          </div>
-                                  
+                          <form role="form" method="GET" action="order.php">
+          
+          
+          <div class="container-fluid py-4">
+            <div class="row">
+              <div class="col-12">
+                <div class="card my-4">
+                  <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                      <h6 class="text-white text-capitalize ps-3">Products</h6>
+                    </div>
+                  </div>
+                  <div class="card-body px-0 pb-2">
+                    <div class="table-responsive p-0">
+                      <table class="table align-items-center mb-0" id="ordertable">
+                        <thead>
+                          <tr>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Price</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Quantity</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
+                            
+                          </tr>
+                        
+                        <tbody>
+                        <?php for ($i = 0; $i < count($item); $i++) {?>
+                          <tr>
+                            <th><?php echo $item[$i]; ?></th>
+                            <th><?php echo $price[$i]; ?></th>
+                            <th><?php echo $quatity[$i]; ?></th>
+                            <th><?php echo $amount[$i]; ?></th>
+                          </tr>
+                          <?php } ?>
+                        </tbody></thead>
+                        </table></div></div></div></div></div></div>
+
                 <div class="text-center">
-                  <button type="button" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Order</button>
+                  <button name="get_submit" type="submit" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Order</button>
                 </div>
         </form>
       </div>
