@@ -5,15 +5,14 @@ if (isset($_POST['submit'])) {
     $s = "SELECT * FROM customer";
     $r = mysqli_query($conn, $s);
     $code = 'C' . $r->num_rows+1;
-    $customer_name = $_POST['name'];
+    $name = $_POST['name'];
     $add = $_POST['add'];
     $contact = $_POST['contact'];
-    try {
-    $sql = "SELECT * FROM customer WHERE name='$customer_name'";
+    // try {
+    $sql = "SELECT * FROM customer WHERE name='$name'";
     $result = mysqli_query($conn, $sql);
-    if (!$result->num_rows > 0) {
-        $sql = "INSERT INTO customer (code, name, add, contact)
-                VALUES ('$code', '$customer_name', '$add', '$contact')";
+    // if (!$result->num_rows > 0) {
+        $sql = "INSERT INTO customer (name, code, add, contact) VALUES ('$name', '$code', '$add', '$contact')";
         $result = mysqli_query($conn, $sql);
         if ($result) {
             echo "<script>alert('Wow! Customer Registration Completed.')</script>";
@@ -21,12 +20,12 @@ if (isset($_POST['submit'])) {
             echo "<script>alert('Woops! Something Wrong Went.')</script>";
         }
     // } else {
-    //     echo "<script>alert('Woops! Product Already Exists.')</script>";
-    }
-} catch (mysqli_sql_exception $e) { 
-    var_dump($e);
-    exit; 
- } 
+    //     echo "<script>alert('Woops! Customer Already Exists.')</script>";
+    // }
+// } catch (mysqli_sql_exception $e) { 
+//     var_dump($e);
+//     exit; 
+//  } 
 }
 
 
@@ -47,7 +46,6 @@ if (isset($_POST['submit'])) {
 $s = "SELECT * FROM customer";
 $r = mysqli_query($conn, $s);
 $code = 'C' . $r->num_rows+1;
-
 ?>
 
 
